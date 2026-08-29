@@ -1,0 +1,150 @@
+Metadata-Version: 2.5
+Name: svcs
+Version: 26.2.0
+Summary: A Flexible Service Locator
+Project-URL: Changelog, https://github.com/hynek/svcs/blob/main/CHANGELOG.md
+Project-URL: Documentation, https://svcs.hynek.me/
+Project-URL: GitHub, https://github.com/hynek/svcs
+Project-URL: Funding, https://github.com/sponsors/hynek
+Project-URL: Mastodon, https://mastodon.social/@hynek
+Project-URL: Twitter, https://twitter.com/hynek
+Author-email: Hynek Schlawack <hs@ox.cx>
+License-Expression: MIT
+License-File: LICENSE
+Keywords: aiohttp,dependency injection,fastapi,flask,inversion of control,service locator,starlette
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Classifier: Programming Language :: Python :: 3.15
+Classifier: Typing :: Typed
+Requires-Python: >=3.10
+Requires-Dist: attrs>=21.3.0
+Requires-Dist: typing-extensions>=4.13.0; python_version < '3.15'
+Description-Content-Type: text/markdown
+
+<p align="center">
+  <a href="https://github.com/hynek/svcs/">
+    <img src="https://raw.githubusercontent.com/hynek/svcs/main/docs/_static/logo_with_name.svg" width="35%" alt="svcs logo showing a hexagon-shaped radar"" />
+  </a>
+</p>
+
+<p align="center">
+  <em>A flexible service locator for Python</em>
+</p>
+<!-- begin index -->
+
+*svcs* (pronounced *services*) is a **dependency container** for Python.
+It gives you a central place to register factories for types/interfaces and then imperatively acquire instances of those types with **automatic cleanup** and **health checks**.
+
+It's suitable for implementing [Inversion of Control](https://svcs.hynek.me/en/latest/glossary.html#term-Inversion-of-Control) using either **dependency injection** or **service location** while not requiring global state, decorators, or mangling of function signatures.
+
+<!-- begin benefits -->
+Benefits:
+
+- Eliminates tons of repetitive **boilerplate** code,
+- unifies **acquisition** and **cleanups** of services,
+- provides full *static* **type safety** for them,
+- simplifies **testing** through **loose coupling**,
+- improves *live* **introspection** and **monitoring** with **health checks**.
+
+The goal is to minimize the code for acquiring pluggable services to:
+
+<!-- end index -->
+<!-- end benefits -->
+
+<!-- skip: next -->
+
+```python
+from svcs.your_framework import svcs_from
+
+
+def view(request):
+    db, api, cache = svcs_from(request).get(Database, WebAPIClient, Cache)
+```
+
+... or less!
+
+<!-- begin addendum -->
+To a type checker, `db` has the type `Database`, `api` has the type `WebAPIClient`, and `cache` has the type `Cache`.
+`db`, `api`, and `cache` will be automatically cleaned up when the request ends – it's context managers all the way down.
+<!-- end addendum -->
+
+*svcs* comes with seamless integration for **AIOHTTP**, **FastAPI**, **Flask**, and **Starlette**.
+Even more community-supported integrations can be found in our [project wiki](https://github.com/hynek/svcs/wiki/Third%E2%80%90party-Extensions).
+
+<!-- begin typing -->
+While *svcs* also has first-class support for static typing, it is **strictly optional** and will always remain so.
+*svcs* also doesn't check your types at runtime.
+It only forwards the type you have asked for to the type checker.
+If you don't use a type checker, that information is ignored without any runtime overhead.
+<!-- end typing -->
+
+Read on in [*Why?*](https://svcs.hynek.me/en/stable/why.html) or watch this short video if you're intrigued:
+
+[![Watch the video](https://img.youtube.com/vi/d1elMD9WgpA/maxresdefault.jpg)](https://youtu.be/d1elMD9WgpA)
+
+
+## Project links
+
+- [**PyPI**](https://pypi.org/project/svcs/)
+- [**GitHub**](https://github.com/hynek/svcs)
+- [**Documentation**](https://svcs.hynek.me)
+- [**Changelog**](https://github.com/hynek/svcs/blob/main/CHANGELOG.md)
+- [**Funding**](https://hynek.me/say-thanks/)
+- [**Third-party extensions**](https://github.com/hynek/svcs/wiki/Third%E2%80%90party-Extensions)
+
+## Release Information
+
+### Removed
+
+- The Pyramid integration.
+  Maintenance within the main package has become too much of a burden, so it is now lives in its own package called [*svcs-pyramid*](https://github.com/hynek/svcs-pyramid).
+
+  Migrating is a pure rename: install `svcs-pyramid`, then replace `import svcs` with `import svcs_pyramid` and `svcs.pyramid.foo()` with `svcs_pyramid.foo()`.
+  The registry and the container are still stored under the same keys, so nothing else changes.
+  We will try to continue its maintenance for as long as its feasible.
+
+  This is in line with our [backwards-compatibility policy](https://github.com/hynek/svcs/blob/main/.github/SECURITY.md) that has a provision for this exact case.
+  [#180](https://github.com/hynek/svcs/pull/180)
+
+
+### Added
+
+- FastAPI: `svcs.fastapi.get_registry()` returns the registry of a running application, either from the application object itself or from a test client wrapping it.
+  The new `svcs.fastapi.DepRegistry` dependency (based on `svcs.fastapi.registry()`) injects it into views.
+  [#186](https://github.com/hynek/svcs/pull/186)
+
+- Starlette: `svcs.starlette.get_registry()` returns the registry of a running application, either from the application object itself or from a test client wrapping it.
+  [#186](https://github.com/hynek/svcs/pull/186)
+
+
+### Fixed
+
+- Autowiring now evaluates Python 3.14+ `typing.ForwardRef` annotations before service lookup.
+  [#187](https://github.com/hynek/svcs/pull/187)
+
+
+---
+
+[Full Changelog →](https://github.com/hynek/svcs/blob/main/CHANGELOG.md)
+
+
+## Credits
+
+*svcs* is written by [Hynek Schlawack](https://hynek.me/) and distributed under the terms of the [MIT](https://github.com/hynek/svcs/blob/main/LICENSE) license.
+
+The development is kindly supported by my employer [Variomedia AG](https://www.variomedia.de/) and all my fabulous [GitHub Sponsors](https://github.com/sponsors/hynek).
+
+The [Bestagon](https://www.youtube.com/watch?v=thOifuHs6eY) radar logo is made by [Lynn Root](https://www.roguelynn.com), based on a [Font Awesome](https://fontawesome.com) icon.
+*svcs* has started out as a wrapper around [*wired*](https://wired.readthedocs.io/) by [Michael Merickel](https://michael.merickel.org/) and has been heavily influenced by it.
+
+
+## *svcs* for Enterprise
+
+Available as part of the [Tidelift Subscription](https://tidelift.com/?utm_source=lifter&utm_medium=referral&utm_campaign=hynek).
+
+The maintainers of *svcs* and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source packages you use to build your applications.
+Save time, reduce risk, and improve code health, while paying the maintainers of the exact packages you use.

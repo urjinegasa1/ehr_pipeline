@@ -1,0 +1,8 @@
+pandas>=2.2
+numpy>=1.26
+pyarrow>=15.0
+great_expectations>=1.0
+pyspark>=3.5
+dvc>=3.0
+apache-airflow>=2.9
+jupyter

@@ -1,0 +1,5 @@
+outs:
+- md5: 50f1bc825a12826c43c8147dc09b6d8c
+  size: 4798564
+  hash: md5
+  path: ehr_lab_api_extract.json
